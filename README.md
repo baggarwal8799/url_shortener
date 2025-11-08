@@ -420,11 +420,13 @@ Frontend (Next.js) → API Gateway (Port 4000) → Microservices → Database/Ca
 
 ## 🛠️ Installation
 
+Run the docker compose file to set up the enviornment with all the services. Rest are just step not actual commands.
+
 ### 1. Clone the repository
 
 ```bash
 git clone <repository-url>
-cd experimental
+cd url_shortener
 ```
 
 ### 2. Set up PostgreSQL
