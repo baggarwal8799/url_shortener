@@ -420,36 +420,66 @@ Frontend (Next.js) → API Gateway (Port 4000) → Microservices → Database/Ca
 
 ## 🛠️ Installation
 
-Run the docker compose file to set up the enviornment with all the services. Rest are just step not actual commands.
+Follow the steps below to set up the complete environment using Docker and run all services locally.
 
-### 1. Clone the repository
+---
+
+### 1. Clone the Repository
 
 ```bash
 git clone <repository-url>
 cd url_shortener
 ```
 
-### 2. Set up PostgreSQL
-
-Create a database:
-
-```bash
-createdb linkshort
+### 2. Start All Services Using Docker
+Open your terminal and run:
+#### For Windows:
+```
+docker-compose up -d
 ```
 
-Run migrations:
-
-```bash
-cd migrations
-npm install
-npm run migrate
+#### For Linux / macOS:
+```
+docker compose up -d
 ```
 
-### 3. Set up environment variables
+This command will start all services — PostgreSQL, Redis, Kafka, Zookeeper, and Kafka UI — at their respective ports as defined in the docker-compose.yml file.
 
-Each service needs its own `.env` file. See individual service README files for details.
+💡 Note: If any ports are already in use, open the docker-compose.yml file and update the ports section for the conflicting services before re-running the command.
 
-### 4. Install dependencies
+### 3. Verify Database Creation
+After all containers are up, verify that the PostgreSQL database has been created.
+
+To access the Postgres shell inside the running container:
+
+```
+docker exec -it urlshortener-postgres psql -U admin -d urlshortener
+```
+Here’s how the above command is constructed:
+```
+urlshortener-postgres → name of the container (from docker-compose)
+-U admin → uses the username defined as POSTGRES_USER
+-d urlshortener → connects to the database defined as POSTGRES_DB
+```
+If you’ve modified these values in .env or docker-compose.yml, update them accordingly in your command.
+
+Once inside the shell, check the database tables:
+
+```
+\dt
+```
+
+### 4. If Schema Is Not Created Automatically
+In case the migrations didn’t run during container initialization:
+
+Go to the migrations folder and manually execute each SQL file:
+
+```
+docker exec -it urlshortener-postgres psql -U admin -d urlshortener -f /docker-entrypoint-initdb.d/<filename>.sql
+```
+Repeat this for all migration files sequentially to create the schema.
+
+### 5. Install dependencies
 
 ```bash
 # Install dependencies for all services
@@ -463,11 +493,6 @@ cd ../analytics-service && npm install
 cd ../../frontend && npm install
 ```
 
-### 5. Start Redis
-
-```bash
-redis-server
-```
 
 ### 6. Start all services
 
